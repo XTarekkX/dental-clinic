@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: clinic
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/dental_clinic
+    username: postgres
+    password: ronaldo2011
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          public-key-location: classpath:certs/public.pem
+          private-key-location: classpath:certs/private.pem
+
+app:
+  base-url: http://localhost:8080
+  jwt:
+    access-token-expiration: 900000
+    refresh-token-expiration: 604800000
+  file:
+    upload-dir: uploads/xrays
+    max-size-mb: 10
+    allowed-types: image/jpeg,image/png,image/webp,application/dicom
+
+logging:
+  level:
+    root: INFO
+    com.example.clinic: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
