@@ -33,4 +33,27 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
+
+    @Query("""
+            SELECT COALESCE(SUM(p.amount), 0) FROM Payment p
+            WHERE p.paidAt BETWEEN :start AND :end
+            """)
+    BigDecimal sumPaymentsByDateRange(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
+    @Query("""
+            SELECT p FROM Payment p
+            JOIN FETCH p.invoice i
+            JOIN FETCH i.doctor d
+            JOIN FETCH p.patient patient
+            WHERE p.paidAt BETWEEN :start AND :end
+            ORDER BY p.paidAt DESC
+            """)
+    List<Payment> findAllByDateRangeWithDetails(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
 }

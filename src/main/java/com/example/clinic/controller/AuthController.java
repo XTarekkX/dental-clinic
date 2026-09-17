@@ -2,6 +2,7 @@ package com.example.clinic.controller;
 
 import com.example.clinic.dto.request.LoginRequest;
 import com.example.clinic.dto.request.RefreshTokenRequest;
+import com.example.clinic.dto.request.RegisterRequest;
 import com.example.clinic.dto.response.AuthResponse;
 import com.example.clinic.service.AuthService;
 import jakarta.validation.Valid;
@@ -21,6 +22,15 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
+
+    // POST /api/v1/auth/register
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponse> register(
+            @Valid @RequestBody RegisterRequest request) {
+
+        AuthResponse response = authService.register(request);
+        return ResponseEntity.ok(response);
+    }
 
     // POST /api/v1/auth/login
     // @Valid triggers the validation annotations on LoginRequest

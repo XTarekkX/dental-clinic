@@ -64,4 +64,15 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
             LocalDateTime start,
             LocalDateTime end
     );
+
+    @Query("""
+        SELECT COUNT(a) FROM Appointment a
+        WHERE a.scheduledAt >= :start
+        AND a.scheduledAt < :end
+        """)
+    long countByDateRange(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
 }

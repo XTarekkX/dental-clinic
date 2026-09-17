@@ -4,7 +4,7 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5432/dental_clinic
-    username: postgres
+    username: abdelrahmanfahmy
     password: ronaldo2011
     driver-class-name: org.postgresql.Driver
 
@@ -25,9 +25,10 @@ spring:
           private-key-location: classpath:certs/private.pem
 
 app:
-  base-url: http://localhost:8080
+  base-url: http://192.168.1.6:8080
   jwt:
     access-token-expiration: 900000
+    session-refresh-token-expiration: 86400000
     refresh-token-expiration: 604800000
   file:
     upload-dir: uploads/xrays

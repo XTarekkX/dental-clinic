@@ -17,7 +17,6 @@ public record OperationRequest(
         String operationType,
 
         // The actual diagnosis — what is wrong with this tooth
-        @NotBlank(message = "Dental problem description is required")
         String dentalProblem,
 
         // What the doctor plans to do — may span multiple visits

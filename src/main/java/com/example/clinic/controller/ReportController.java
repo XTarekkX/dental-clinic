@@ -3,6 +3,7 @@ package com.example.clinic.controller;
 import com.example.clinic.dto.response.*;
 import com.example.clinic.service.ReportService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +27,20 @@ public class ReportController {
 
         return ResponseEntity.ok(
                 reportService.getFinancialReport(startDate, endDate));
+    }
+
+
+    // GET /api/v1/reports/clinic-financial?startDate=...&endDate=...
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/clinic-financial")
+    public ResponseEntity<ClinicFinancialReportResponse> getClinicFinancialReport(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate endDate) {
+
+        return ResponseEntity.ok(
+                reportService.getClinicFinancialReport(startDate, endDate));
     }
 
     // GET /api/v1/reports/appointments?startDate=...&endDate=...

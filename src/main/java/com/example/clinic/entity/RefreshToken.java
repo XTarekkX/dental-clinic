@@ -24,4 +24,7 @@ public class RefreshToken extends BaseEntity {
 
     @Builder.Default
     private Boolean isRevoked = false;
+
+    @Builder.Default
+    private Boolean rememberMe = false;
 }

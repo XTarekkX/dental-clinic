@@ -60,6 +60,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
+                                "/api/v1/auth/register",
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/refresh",
                                 "/api/v1/auth/test-hash"
@@ -79,7 +80,10 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:4173",
-                "http://127.0.0.1:4173"
+                "http://127.0.0.1:4173",
+                "http://192.168.1.6:4173",
+                "http://192.168.1.31:4173",
+                "http://192.168.1.5:4173"
         ));
 
         configuration.setAllowedMethods(List.of(

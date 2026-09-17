@@ -209,6 +209,71 @@ public class ReportService {
         );
     }
 
+
+    // ── CLINIC-WIDE FINANCIAL REPORT ─────────────────────────────
+    @Transactional(readOnly = true)
+    public ClinicFinancialReportResponse getClinicFinancialReport(
+            LocalDate startDate, LocalDate endDate) {
+
+        log.info("Generating clinic-wide financial report from {} to {}",
+                startDate, endDate);
+
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.plusDays(1).atStartOfDay();
+
+        BigDecimal totalCollected = paymentRepository
+                .sumPaymentsByDateRange(start, end);
+        BigDecimal totalExpenses = expenseRepository
+                .sumExpensesByDateRange(startDate, endDate);
+        BigDecimal netProfit = totalCollected.subtract(totalExpenses);
+        long totalAppointments = appointmentRepository
+                .countByDateRange(start, end);
+
+        List<ClinicPaymentReportItemResponse> payments = paymentRepository
+                .findAllByDateRangeWithDetails(start, end)
+                .stream()
+                .map(payment -> new ClinicPaymentReportItemResponse(
+                        payment.getId(),
+                        payment.getInvoice().getDoctor().getId(),
+                        payment.getInvoice().getDoctor().getFirstName()
+                                + " "
+                                + payment.getInvoice().getDoctor().getLastName(),
+                        payment.getPatient().getId(),
+                        payment.getPatient().getFirstName()
+                                + " " + payment.getPatient().getLastName(),
+                        payment.getInvoice().getId(),
+                        payment.getInvoice().getInvoiceNumber(),
+                        payment.getAmount(),
+                        payment.getPaymentMethod(),
+                        payment.getReferenceNumber(),
+                        payment.getPaidAt(),
+                        payment.getNotes(),
+                        payment.getCreatedAt()
+                ))
+                .toList();
+
+        List<ClinicExpenseReportItemResponse> expenses = expenseRepository
+                .findAllByDateRangeWithDoctor(startDate, endDate)
+                .stream()
+                .map(expense -> new ClinicExpenseReportItemResponse(
+                        expense.getId(),
+                        expense.getDoctor().getId(),
+                        expense.getDoctor().getFirstName()
+                                + " " + expense.getDoctor().getLastName(),
+                        expense.getCategory(),
+                        expense.getDescription(),
+                        expense.getAmount(),
+                        expense.getExpenseDate(),
+                        expense.getCreatedAt()
+                ))
+                .toList();
+
+        return new ClinicFinancialReportResponse(
+                startDate, endDate, totalCollected, totalExpenses,
+                netProfit, totalAppointments, payments, expenses
+        );
+    }
+
     // ── PRIVATE HELPERS ───────────────────────────────────────────
     private long countAppointmentsByStatus(
             List<Appointment> appointments,
