@@ -1,0 +1,11 @@
+target/
+.git/
+.idea/
+*.iml
+.DS_Store
+*.md
+HELP.md
+.env.properties
+config/keys/
+uploads/
+opencode.json
