@@ -2,12 +2,10 @@ package com.example.clinic.service;
 
 import com.example.clinic.dto.request.LoginRequest;
 import com.example.clinic.dto.request.RefreshTokenRequest;
-import com.example.clinic.dto.request.RegisterRequest;
 import com.example.clinic.dto.response.AuthResponse;
 import com.example.clinic.entity.Doctor;
 import com.example.clinic.entity.RefreshToken;
 import com.example.clinic.entity.User;
-import com.example.clinic.exception.DuplicateResourceException;
 import com.example.clinic.exception.InvalidCredentialsException;
 import com.example.clinic.exception.ResourceNotFoundException;
 import com.example.clinic.repository.DoctorRepository;
@@ -20,7 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,52 +34,12 @@ public class AuthService {
     private final DoctorRepository doctorRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
-    private final PasswordEncoder passwordEncoder;
 
     @Value("${app.jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
 
     @Value("${app.jwt.session-refresh-token-expiration}")
     private long sessionRefreshTokenExpiration;
-
-    // ── REGISTER ───────────────────────────────────────────────
-    @Transactional
-    public AuthResponse register(RegisterRequest request) {
-        log.info("Registration attempt for username: {}", request.username());
-        String username = request.username().trim();
-        String email = request.email().trim();
-
-        if (userRepository.existsByUsername(username)) {
-            throw new DuplicateResourceException("Username is already taken");
-        }
-
-        if (userRepository.existsByEmail(email)) {
-            throw new DuplicateResourceException("Email is already registered");
-        }
-
-        User user = User.builder()
-                .username(username)
-                .email(email)
-                .passwordHash(passwordEncoder.encode(request.password()))
-                .role(request.role())
-                .isActive(true)
-                .build();
-
-        Doctor doctor = Doctor.builder()
-                .user(user)
-                .firstName(request.firstName().trim())
-                .lastName(request.lastName().trim())
-                .phone(trimToNull(request.phone()))
-                .specialization(trimToNull(request.specialization()))
-                .licenseNumber(trimToNull(request.licenseNumber()))
-                .build();
-
-        user.setDoctor(doctor);
-        User savedUser = userRepository.save(user);
-
-        log.info("Registration successful for username: {}", savedUser.getUsername());
-        return issueAuthResponse(savedUser, doctor, true);
-    }
 
     // ── LOGIN ───────────────────────────────────────────────────
     @Transactional
@@ -202,13 +159,5 @@ public class AuthService {
 
     private long resolveRefreshTokenExpiration(boolean rememberMe) {
         return rememberMe ? refreshTokenExpiration : sessionRefreshTokenExpiration;
-    }
-
-    private String trimToNull(String value) {
-        if (value == null || value.trim().isEmpty()) {
-            return null;
-        }
-
-        return value.trim();
     }
 }

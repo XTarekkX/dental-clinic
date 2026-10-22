@@ -2,14 +2,12 @@ package com.example.clinic.controller;
 
 import com.example.clinic.dto.request.LoginRequest;
 import com.example.clinic.dto.request.RefreshTokenRequest;
-import com.example.clinic.dto.request.RegisterRequest;
 import com.example.clinic.dto.response.AuthResponse;
 import com.example.clinic.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,15 +20,6 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
-
-    // POST /api/v1/auth/register
-    @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(
-            @Valid @RequestBody RegisterRequest request) {
-
-        AuthResponse response = authService.register(request);
-        return ResponseEntity.ok(response);
-    }
 
     // POST /api/v1/auth/login
     // @Valid triggers the validation annotations on LoginRequest
@@ -61,11 +50,6 @@ public class AuthController {
         return ResponseEntity.ok("Logged out successfully");
     }
 
-    //testing endpoint to get hashed password and store it in db directly
-    @GetMapping("/test-hash")
-    public String testHash() {
-        return new BCryptPasswordEncoder().encode("password123");
-    }
     // GET /api/v1/auth/me
     @GetMapping("/me")
     public ResponseEntity<Map<String, Object>> me(
