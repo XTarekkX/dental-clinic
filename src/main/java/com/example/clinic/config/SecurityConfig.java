@@ -44,6 +44,9 @@ public class SecurityConfig {
     @Value("${spring.security.oauth2.resourceserver.jwt.private-key-location}")
     RSAPrivateKey privateKey;
 
+    @Value("${app.cors.allowed-origins}")
+    List<String> allowedOrigins;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -78,13 +81,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost:4173",
-                "http://127.0.0.1:4173",
-                "http://192.168.1.6:4173",
-                "http://192.168.1.31:4173",
-                "http://192.168.1.5:4173"
-        ));
+        configuration.setAllowedOrigins(allowedOrigins);
 
         configuration.setAllowedMethods(List.of(
                 "GET",

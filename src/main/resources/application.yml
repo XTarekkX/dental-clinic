@@ -2,10 +2,13 @@ spring:
   application:
     name: clinic
 
+  config:
+    import: optional:file:./.env.properties
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/dental_clinic
-    username: abdelrahmanfahmy
-    password: ronaldo2011
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/dental_clinic}
+    username: ${DB_USERNAME:abdelrahmanfahmy}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -22,10 +25,12 @@ spring:
       resourceserver:
         jwt:
           public-key-location: classpath:certs/public.pem
-          private-key-location: classpath:certs/private.pem
+          private-key-location: ${JWT_PRIVATE_KEY_LOCATION:file:./config/keys/private.pem}
 
 app:
-  base-url: http://192.168.1.6:8080
+  base-url: ${APP_BASE_URL:http://localhost:8080}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4173,http://127.0.0.1:4173}
   jwt:
     access-token-expiration: 900000
     session-refresh-token-expiration: 86400000
