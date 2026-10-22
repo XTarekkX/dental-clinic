@@ -27,6 +27,9 @@ spring:
           public-key-location: classpath:certs/public.pem
           private-key-location: ${JWT_PRIVATE_KEY_LOCATION:file:./config/keys/private.pem}
 
+server:
+  port: ${PORT:8080}
+
 app:
   base-url: ${APP_BASE_URL:http://localhost:8080}
   cors:
